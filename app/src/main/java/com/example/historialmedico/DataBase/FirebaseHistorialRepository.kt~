@@ -9,10 +9,6 @@ class FirebaseHistorialRepository {
     private val historialCollection = db.collection("historial")
     private val auth = FirebaseAuth.getInstance()
 
-    private fun getUserId(): String? {
-        return auth.currentUser?.uid
-    }
-
 
     fun addHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         historialCollection.add(historial)
