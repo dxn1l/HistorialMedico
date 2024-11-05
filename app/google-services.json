@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "372874041772",
+    "project_id": "historialmedico-83691",
+    "storage_bucket": "historialmedico-83691.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372874041772:android:2275c3a164f2ece19e0209",
+        "android_client_info": {
+          "package_name": "com.example.historialmedico"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALA7Dm8X0n7fBgh17DPSKAjyAgg5rCwnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
