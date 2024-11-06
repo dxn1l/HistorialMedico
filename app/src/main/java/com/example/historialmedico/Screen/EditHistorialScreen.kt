@@ -1,5 +1,6 @@
 package com.example.historialmedico.Screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
@@ -59,61 +60,54 @@ fun EditHistorialScreen(navController: NavController, historial: historial) {
         item { OutlinedTextField(value = enfermedadesCronicas.value, onValueChange = { enfermedadesCronicas.value = it }, label = { Text("Enfermedades crónicas") }) }
         item { OutlinedTextField(value = antecedentesPersonales.value, onValueChange = { antecedentesPersonales.value = it }, label = { Text("Antecedentes personales") }) }
 
-        // Botón para guardar cambios
         item {
             Button(onClick = {
-                // Crear el objeto historial actualizado
-                val updatedHistorial = historial.copy(
-                    nombre = nombre.value,
-                    apellido = apellido.value,
-                    edad = edad.value.toInt(),
-                    peso = peso.value.toInt(),
-                    altura = altura.value.toDouble(),
-                    telefono = telefono.value.toInt(),
-                    correo = correo.value,
-                    sangre = sangre.value,
-                    fechaUltimoExamen = fechaUltimoExamen.value,
-                    enfermedades = enfermedades.value,
-                    cirugias = cirugias.value,
-                    fechaCirugias = fechaCirugias.value,
-                    medicamentos = medicamentos.value,
-                    dosis = dosis.value,
-                    usoMedicamentos = usoMedicamentos.value,
-                    alergias = alergias.value,
-                    enfermedadesCronicas = enfermedadesCronicas.value,
-                    antecedentesPersonales = antecedentesPersonales.value
-                )
+                Log.d("EditHistorialScreen", "ID del historial: ${historial.id}")  // Asegúrate de que el ID esté correcto
 
-                // Actualizar el historial en Firebase
-                repository.updateHistorial(updatedHistorial, onSuccess = {
-                    // Navegar al menú después de actualizar
-                    navController.navigate("menu") {
-                        popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
+                // Eliminar el historial anterior
+                repository.deleteHistorial(historial.id!!, onSuccess = {
+                    Log.d("FirebaseHistorialRepository", "Historial eliminado exitosamente")
+
+                    // Ahora agregar el historial actualizado
+                    val updatedHistorial = historial.copy(
+                        nombre = nombre.value,
+                        apellido = apellido.value,
+                        edad = edad.value.toInt(),
+                        peso = peso.value.toInt(),
+                        altura = altura.value.toDouble(),
+                        telefono = telefono.value.toInt(),
+                        correo = correo.value,
+                        sangre = sangre.value,
+                        fechaUltimoExamen = fechaUltimoExamen.value,
+                        enfermedades = enfermedades.value,
+                        cirugias = cirugias.value,
+                        fechaCirugias = fechaCirugias.value,
+                        medicamentos = medicamentos.value,
+                        dosis = dosis.value,
+                        usoMedicamentos = usoMedicamentos.value,
+                        alergias = alergias.value,
+                        enfermedadesCronicas = enfermedadesCronicas.value,
+                        antecedentesPersonales = antecedentesPersonales.value
+                    )
+
+                    repository.addHistorial(updatedHistorial, onSuccess = {
+                        Log.d("FirebaseHistorialRepository", "Historial actualizado con éxito")
+                        navController.navigate("menu") {
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }, onFailure = {
-                    // Manejo de error si falla la actualización
+                    }, onFailure = {
+                        Log.e("FirebaseHistorialRepository", "Error al agregar historial actualizado", it)
+                    })
+
+                }, onFailure = { exception ->
+                    Log.e("FirebaseHistorialRepository", "Error al eliminar historial anterior", exception)
                 })
             }) {
                 Text("Guardar cambios")
-            }
-        }
-
-        // Botón para regresar al menú
-        item {
-            Button(onClick = {
-                navController.navigate("menu") {
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                    restoreState = true
-                }
-            }) {
-                Text("Volver al menú")
             }
         }
     }
