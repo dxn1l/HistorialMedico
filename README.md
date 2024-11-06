@@ -1,3 +1,5 @@
+#  Hecho por Daniel Andrés Moreno Rey , Rodrigo Rojas Redondo , Arturo Lopez Castaño y Roberto Quilez
+
 LINK al repositorio: https://github.com/dxn1l/HistorialMedico.git
 
 
