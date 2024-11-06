@@ -19,17 +19,15 @@ import com.example.historialmedico.DataBase.historial
 
 @Composable
 fun ViewHistorialScreen(
-
-
     historialRepository: FirebaseHistorialRepository,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onEditHistorialClick: (historial) -> Unit
 ) {
-
     val historialList = remember { mutableStateListOf<historial>() }
 
     LaunchedEffect(Unit) {
         historialRepository.getHistorial(
-            onSuccess = { historialList.addAll(it) },
+            onSuccess = { historialList.clear(); historialList.addAll(it) },
             onFailure = { }
         )
     }
@@ -71,15 +69,17 @@ fun ViewHistorialScreen(
             }
             Spacer(modifier = Modifier.height(8.dp))
 
-            Button(
-                onClick = {
-                    onBack()
-                }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                Text(text = "Volver al menú")
+                Button(onClick = { onBack() }) {
+                    Text(text = "Volver al menú")
+                }
+                Button(onClick = { onEditHistorialClick(historial) }) {
+                    Text(text = "Modificar Historial")
+                }
             }
         }
     }
 }
-
