@@ -24,8 +24,6 @@ import androidx.compose.ui.Modifier
 import com.example.historialmedico.DataBase.FirebaseHistorialRepository
 import com.example.historialmedico.DataBase.historial
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 
 @Composable
 fun AddHistorialScreen(
@@ -55,22 +53,27 @@ fun AddHistorialScreen(
     var alergias by remember { mutableStateOf("") }
     var enfermedadesCronicas by remember { mutableStateOf("") }
     var antecedentesPersonales by remember { mutableStateOf("") }
+
     var showDialogEmptylane by remember { mutableStateOf(false) }
+
     val bloodTypes = listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
     var expanded by remember { mutableStateOf(false) }
 
 
     LazyColumn(
+
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
+
     ) {
+
         item {
             Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(8.dp)
+
+
             ) {
 
 

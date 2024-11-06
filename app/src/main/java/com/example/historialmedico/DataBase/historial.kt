@@ -2,6 +2,8 @@ package com.example.historialmedico.DataBase
 
 data class historial(
 
+
+    var userId: String? = null,
     var id: String? = null ,
     var nombre: String = "",
     var apellido: String = "",

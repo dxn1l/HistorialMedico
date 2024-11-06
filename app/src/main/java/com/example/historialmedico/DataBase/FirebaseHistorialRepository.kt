@@ -15,12 +15,19 @@ class FirebaseHistorialRepository {
 
 
     fun addHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        historialCollection.add(historial)
-            .addOnSuccessListener { documentReference ->
-                historial.id = documentReference.id
-                onSuccess()
-            }
-            .addOnFailureListener { exception -> onFailure(exception) }
+        val userId = getUserId()
+        if (userId != null){
+            historial.userId = userId
+            historialCollection.add(historial)
+                .addOnSuccessListener { documentReference ->
+                    historial.id = documentReference.id
+                    onSuccess()
+                }
+                    .addOnFailureListener { exception -> onFailure(exception) }
+             }
+        else {
+            onFailure(Exception("User not authenticated"))
+        }
     }
 
     fun getHistorial(onSuccess: (List<historial>) -> Unit, onFailure: (Exception) -> Unit) {
