@@ -26,16 +26,13 @@ import com.example.historialmedico.DataBase.historial
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun AddHistorialScreen(
-
     historialRepository: FirebaseHistorialRepository,
     onHistorialAdded: () -> Unit
-
-
 ) {
-
     var id by remember { mutableStateOf("") }
     var nombre by remember { mutableStateOf("") }
     var apellido by remember { mutableStateOf("") }
@@ -56,9 +53,27 @@ fun AddHistorialScreen(
     var enfermedadesCronicas by remember { mutableStateOf("") }
     var antecedentesPersonales by remember { mutableStateOf("") }
     var showDialogEmptylane by remember { mutableStateOf(false) }
+    var idError by remember { mutableStateOf(false) }
+    var nombreError by remember { mutableStateOf(false) }
+    var apellidoError by remember { mutableStateOf(false) }
+    var edadError by remember { mutableStateOf(false) }
+    var pesoError by remember { mutableStateOf(false) }
+    var alturaError by remember { mutableStateOf(false) }
+    var telefonoError by remember { mutableStateOf(false) }
+    var fechaUltimoExamenError by remember { mutableStateOf(false) }
+    var enfermedadesError by remember { mutableStateOf(false) }
+    var cirugiasError by remember { mutableStateOf(false) }
+    var fechaCirugiasError by remember { mutableStateOf(false) }
+    var medicamentosError by remember { mutableStateOf(false) }
+    var dosisError by remember { mutableStateOf(false) }
+    var alergiasError by remember { mutableStateOf(false) }
+    var enfermedadesCronicasError by remember { mutableStateOf(false) }
+    var antecedentesPersonalesError by remember { mutableStateOf(false) }
+    var showErrorMessage by remember { mutableStateOf(false) }
     val bloodTypes = listOf("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
     var expanded by remember { mutableStateOf(false) }
 
+    val isFormValid = !idError && !nombreError && !apellidoError && !edadError && !pesoError && !alturaError && !telefonoError && !fechaUltimoExamenError && !enfermedadesError && !cirugiasError && !fechaCirugiasError && !medicamentosError && !dosisError && !alergiasError && !enfermedadesCronicasError && !antecedentesPersonalesError
 
     LazyColumn(
         modifier = Modifier
@@ -69,74 +84,146 @@ fun AddHistorialScreen(
     ) {
         item {
             Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = CardDefaults.cardElevation(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(8.dp)
             ) {
-
-
                 Column(
-
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
-
                 ) {
-
                     OutlinedTextField(
                         value = id,
-                        onValueChange = { id = it },
-                        label = { Text("ID") }
+                        onValueChange = {
+                            id = it
+                            idError = it.isBlank()
+                        },
+                        label = { Text("ID") },
+                        isError = idError
                     )
+                    if (idError) {
+                        Text(
+                            text = "ID inválido, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = nombre,
-                        onValueChange = { nombre = it },
-                        label = { Text("Nombre") }
+                        onValueChange = {
+                            nombre = it
+                            nombreError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Nombre") },
+                        isError = nombreError
                     )
+                    if (nombreError) {
+                        Text(
+                            text = "Nombre inválido, escriba su nombre correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = apellido,
-                        onValueChange = { apellido = it },
-                        label = { Text("Apellido") }
+                        onValueChange = {
+                            apellido = it
+                            apellidoError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Apellido") },
+                        isError = apellidoError
                     )
+                    if (apellidoError) {
+                        Text(
+                            text = "Apellido inválido, escriba su apellido correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = edad,
-                        onValueChange = { edad = it },
-                        label = { Text("Edad") }
+                        onValueChange = {
+                            edad = it
+                            edadError = !it.matches(Regex("^[0-9]*$"))
+                        },
+                        label = { Text("Edad") },
+                        isError = edadError
                     )
+                    if (edadError) {
+                        Text(
+                            text = "Edad inválida, escriba su edad correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = peso,
-                        onValueChange = { peso = it },
-                        label = { Text("Peso") }
+                        onValueChange = {
+                            peso = it
+                            pesoError = false
+                        },
+                        label = { Text("Peso") },
+                        isError = pesoError
                     )
+                    if (pesoError) {
+                        Text(
+                            text = "Peso inválido, escriba su peso correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = altura,
-                        onValueChange = { altura = it },
-                        label = { Text("Altura") }
+                        onValueChange = {
+                            altura = it
+                            alturaError = false
+                        },
+                        label = { Text("Altura") },
+                        isError = alturaError
                     )
+                    if (alturaError) {
+                        Text(
+                            text = "Altura inválida, escriba su altura correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = telefono,
-                        onValueChange = { telefono = it },
-                        label = { Text("Telefono") }
+                        onValueChange = {
+                            telefono = it
+                            telefonoError = !it.matches(Regex("^[0-9]*$"))
+                        },
+                        label = { Text("Teléfono") },
+                        isError = telefonoError
                     )
+                    if (telefonoError) {
+                        Text(
+                            text = "Teléfono inválido, escriba su teléfono correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -148,7 +235,6 @@ fun AddHistorialScreen(
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
@@ -159,7 +245,8 @@ fun AddHistorialScreen(
                                 onClick = {
                                     sangre = bloodType
                                     expanded = false
-                                })
+                                }
+                            )
                         }
                     }
                     OutlinedTextField(
@@ -169,59 +256,124 @@ fun AddHistorialScreen(
                         label = { Text("Tipo de sangre") },
                         trailingIcon = {
                             IconButton(onClick = { expanded = true }) {
-                                Icon(Icons.Filled.ArrowDropDown, contentDescription = "Dropdown")
+                                Icon(Icons.Filled.ArrowDropDown, contentDescription = null)
                             }
                         }
                     )
-
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = fechaUltimoExamen,
-                        onValueChange = { fechaUltimoExamen = it },
-                        label = { Text("Fecha del ultimo examen") }
+                        onValueChange = {
+                            fechaUltimoExamen = it
+                            fechaUltimoExamenError = false
+                        },
+                        label = { Text("Fecha del último examen") },
+                        isError = fechaUltimoExamenError
                     )
+                    if (fechaUltimoExamenError) {
+                        Text(
+                            text = "Fecha del último examen inválida, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = enfermedades,
-                        onValueChange = { enfermedades = it },
-                        label = { Text("Enfermedades") }
+                        onValueChange = {
+                            enfermedades = it
+                            enfermedadesError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Enfermedades") },
+                        isError = enfermedadesError
                     )
+                    if (enfermedadesError) {
+                        Text(
+                            text = "Enfermedades inválidas, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = cirugias,
-                        onValueChange = { cirugias = it },
-                        label = { Text("Cirugias") }
+                        onValueChange = {
+                            cirugias = it
+                            cirugiasError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Cirugias") },
+                        isError = cirugiasError
                     )
+                    if (cirugiasError) {
+                        Text(
+                            text = "Cirugias inválidas, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = fechaCirugias,
-                        onValueChange = { fechaCirugias = it },
-                        label = { Text("Fecha de las cirugias") }
+                        onValueChange = {
+                            fechaCirugias = it
+                            fechaCirugiasError = false
+                        },
+                        label = { Text("Fecha de las cirugias") },
+                        isError = fechaCirugiasError
                     )
+                    if (fechaCirugiasError) {
+                        Text(
+                            text = "Fecha de las cirugias inválida, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = medicamentos,
-                        onValueChange = { medicamentos = it },
-                        label = { Text("Medicamentos") }
+                        onValueChange = {
+                            medicamentos = it
+                            medicamentosError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Medicamentos") },
+                        isError = medicamentosError
                     )
+                    if (medicamentosError) {
+                        Text(
+                            text = "Medicamentos inválidos, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = dosis,
-                        onValueChange = { dosis = it },
-                        label = { Text("Dosis") }
+                        onValueChange = {
+                            dosis = it
+                            dosisError = false
+                        },
+                        label = { Text("Dosis") },
+                        isError = dosisError
                     )
+                    if (dosisError) {
+                        Text(
+                            text = "Dosis inválida, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -235,71 +387,105 @@ fun AddHistorialScreen(
 
                     OutlinedTextField(
                         value = alergias,
-                        onValueChange = { alergias = it },
-                        label = { Text("Alergias") }
+                        onValueChange = {
+                            alergias = it
+                            alergiasError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Alergias") },
+                        isError = alergiasError
                     )
+                    if (alergiasError) {
+                        Text(
+                            text = "Alergias inválidas, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = enfermedadesCronicas,
-                        onValueChange = { enfermedadesCronicas = it },
-                        label = { Text("Enfermedades cronicas") }
+                        onValueChange = {
+                            enfermedadesCronicas = it
+                            enfermedadesCronicasError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Enfermedades crónicas") },
+                        isError = enfermedadesCronicasError
                     )
+                    if (enfermedadesCronicasError) {
+                        Text(
+                            text = "Enfermedades crónicas inválidas, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = antecedentesPersonales,
-                        onValueChange = { antecedentesPersonales = it },
-                        label = { Text("Antecedentes personales") }
+                        onValueChange = {
+                            antecedentesPersonales = it
+                            antecedentesPersonalesError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
+                        },
+                        label = { Text("Antecedentes personales") },
+                        isError = antecedentesPersonalesError
                     )
+                    if (antecedentesPersonalesError) {
+                        Text(
+                            text = "Antecedentes personales inválidos, escriba correctamente",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    if (showErrorMessage) {
+                        Text(
+                            text = "No cumples todos los requisitos",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Button(
-
                         onClick = {
-                            if (id.isBlank() || nombre.isBlank() || apellido.isBlank() || edad.isBlank() || peso.isBlank() || altura.isBlank() || telefono.isBlank() || correo.isBlank() || sangre.isBlank()
-                                || fechaUltimoExamen.isBlank() || enfermedades.isBlank() || cirugias.isBlank() || fechaCirugias.isBlank() || medicamentos.isBlank() || dosis.isBlank() || usoMedicamentos.isBlank() || alergias.isBlank() || enfermedadesCronicas.isBlank() || antecedentesPersonales.isBlank()
-                            ) {
+                            if (id.isBlank() || nombre.isBlank() || apellido.isBlank() || edad.isBlank() || peso.isBlank() || altura.isBlank() || telefono.isBlank() || correo.isBlank() || sangre.isBlank() || fechaUltimoExamen.isBlank() || enfermedades.isBlank() || cirugias.isBlank() || fechaCirugias.isBlank() || medicamentos.isBlank() || dosis.isBlank() || usoMedicamentos.isBlank() || alergias.isBlank() || enfermedadesCronicas.isBlank() || antecedentesPersonales.isBlank()) {
                                 showDialogEmptylane = true
                             } else {
-
-                                val historial = historial(
-                                    id = id,
-                                    nombre = nombre,
-                                    apellido = apellido,
-                                    edad = edad.toIntOrNull() ?: 0,
-                                    peso = peso.toIntOrNull() ?: 0,
-                                    altura = altura.toDoubleOrNull() ?: 0.0,
-                                    telefono = telefono.toIntOrNull() ?: 0,
-                                    correo = correo,
-                                    sangre = sangre,
-                                    fechaUltimoExamen = fechaUltimoExamen,
-                                    enfermedades = enfermedades,
-                                    cirugias = cirugias,
-                                    fechaCirugias = fechaCirugias,
-                                    medicamentos = medicamentos,
-                                    dosis = dosis,
-                                    usoMedicamentos = usoMedicamentos,
-                                    alergias = alergias,
-                                    enfermedadesCronicas = enfermedadesCronicas,
-                                    antecedentesPersonales = antecedentesPersonales
+                                historialRepository.addHistorial(
+                                    historial(
+                                        id = id,
+                                        nombre = nombre,
+                                        apellido = apellido,
+                                        edad = edad.toInt(),
+                                        peso = peso.toInt(),
+                                        altura = altura.toDouble(),
+                                        telefono = telefono.toInt(),
+                                        correo = correo,
+                                        sangre = sangre,
+                                        fechaUltimoExamen = fechaUltimoExamen,
+                                        enfermedades = enfermedades,
+                                        cirugias = cirugias,
+                                        fechaCirugias = fechaCirugias,
+                                        medicamentos = medicamentos,
+                                        dosis = dosis,
+                                        usoMedicamentos = usoMedicamentos,
+                                        alergias = alergias,
+                                        enfermedadesCronicas = enfermedadesCronicas,
+                                        antecedentesPersonales = antecedentesPersonales
+                                    ),
+                                    onSuccess = { onHistorialAdded() },
+                                    onFailure = { showDialogEmptylane = true }
                                 )
-                                historialRepository.addHistorial(historial, onSuccess = {
-                                    onHistorialAdded()
-                                }, onFailure = { })
-                                onHistorialAdded()
-
                             }
-
-
-                        }
-
+                        },
+                        enabled = isFormValid
                     ) {
-
-
                         Text(text = "Guardar Historial")
                     }
 
@@ -307,20 +493,16 @@ fun AddHistorialScreen(
                         AlertDialog(
                             onDismissRequest = { showDialogEmptylane = false },
                             title = { Text("Error") },
-                            text = { Text("Por favor llena todos los campos") },
+                            text = { Text("Por favor completa todos los campos correctamente") },
                             confirmButton = {
                                 TextButton(onClick = { showDialogEmptylane = false }) {
-                                    Text("Ok")
+                                    Text("OK")
                                 }
                             }
                         )
                     }
-
-
                 }
             }
         }
-
     }
-
 }
