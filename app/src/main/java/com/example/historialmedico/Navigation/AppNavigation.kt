@@ -1,12 +1,18 @@
 package com.example.historialmedico.Navigation
 
+import ViewHistorialScreen
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.historialmedico.DataBase.FirebaseHistorialRepository
 import com.example.historialmedico.DataBase.historial
-import com.example.historialmedico.Screen.*
+import com.example.historialmedico.Screen.AddHistorialScreen
+import com.example.historialmedico.Screen.LoginScreen
+import com.example.historialmedico.Screen.MenuScreen
+import com.example.historialmedico.Screen.EditHistorialScreen
 
 @Composable
 fun AppNavigation(navController: NavHostController) {

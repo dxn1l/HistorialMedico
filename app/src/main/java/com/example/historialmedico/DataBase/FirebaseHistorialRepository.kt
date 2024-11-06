@@ -32,13 +32,14 @@ class FirebaseHistorialRepository {
     fun getHistorial(onSuccess: (List<historial>) -> Unit, onFailure: (Exception) -> Unit) {
         val userId = getUserId()
         if (userId != null) {
-            historialCollection
+        historialCollection
                 .whereEqualTo("userId", userId)  // Filtrar solo por el usuario actual
                 .get()
                 .addOnSuccessListener { result ->
                     val historialList = result.documents.mapNotNull { document ->
                         document.toObject(historial::class.java)
                     }
+
                     Log.d("FirebaseHistorialRepository", "Historial recuperado: $historialList")
                     onSuccess(historialList)
                 }
@@ -117,5 +118,3 @@ class FirebaseHistorialRepository {
         }
     }
 
-
-}

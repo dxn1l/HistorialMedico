@@ -75,13 +75,44 @@ data class historial(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<historial> {
-        override fun createFromParcel(parcel: Parcel): historial {
-            return historial(parcel)
+    override fun toString(): String {
+        return "$nombre $apellido $edad $peso $altura $telefono $correo $sangre $fechaUltimoExamen $enfermedades $cirugias $fechaCirugias $medicamentos $dosis $usoMedicamentos $alergias $enfermedadesCronicas $antecedentesPersonales"
+    }
+
+    companion object {
+        fun fromString(data: String): historial {
+            val parts = data.split(" ")
+            return historial(
+                nombre = parts[0],
+                apellido = parts[1],
+                edad = parts[2].toInt(),
+                peso = parts[3].toInt(),
+                altura = parts[4].toDouble(),
+                telefono = parts[5].toInt(),
+                correo = parts[6],
+                sangre = parts[7],
+                fechaUltimoExamen = parts[8],
+                enfermedades = parts[9],
+                cirugias = parts[10],
+                fechaCirugias = parts[11],
+                medicamentos = parts[12],
+                dosis = parts[13],
+                usoMedicamentos = parts[14],
+                alergias = parts[15],
+                enfermedadesCronicas = parts[16],
+                antecedentesPersonales = parts[17]
+            )
         }
 
-        override fun newArray(size: Int): Array<historial?> {
-            return arrayOfNulls(size)
+        @JvmField
+        val CREATOR = object : Parcelable.Creator<historial> {
+            override fun createFromParcel(parcel: Parcel): historial {
+                return historial(parcel)
+            }
+
+            override fun newArray(size: Int): Array<historial?> {
+                return arrayOfNulls(size)
+            }
         }
     }
 }
