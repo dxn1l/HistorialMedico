@@ -18,10 +18,21 @@ class FirebaseHistorialRepository {
         val userId = getUserId()
         if (userId != null) {
             historial.userId = userId
-            historialCollection.add(historial)
-                .addOnSuccessListener { documentReference ->
-                    historial.id = documentReference.id
-                    onSuccess()
+            // First, delete any existing historial for the user
+            historialCollection
+                .whereEqualTo("userId", userId)
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result.documents) {
+                        historialCollection.document(document.id).delete()
+                    }
+                    // After deleting, add the new historial
+                    historialCollection.add(historial)
+                        .addOnSuccessListener { documentReference ->
+                            historial.id = documentReference.id
+                            onSuccess()
+                        }
+                        .addOnFailureListener { exception -> onFailure(exception) }
                 }
                 .addOnFailureListener { exception -> onFailure(exception) }
         } else {
@@ -52,21 +63,6 @@ class FirebaseHistorialRepository {
         }
     }
 
-
-    fun getHistorialById(historialId: String?, onSuccess: (historial?) -> Unit, onFailure: (Exception) -> Unit) {
-        if (historialId == null) {
-            onFailure(Exception("Historial ID is null"))
-            return
-        }
-        historialCollection.document(historialId).get()
-            .addOnSuccessListener { document ->
-                val historial = document.toObject(historial::class.java)
-                onSuccess(historial)
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception)
-            }
-    }
 
     fun deleteHistorial(
         historialId: String,

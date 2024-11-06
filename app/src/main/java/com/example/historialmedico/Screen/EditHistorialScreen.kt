@@ -4,11 +4,15 @@ import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -16,9 +20,31 @@ import com.example.historialmedico.DataBase.FirebaseHistorialRepository
 import com.example.historialmedico.DataBase.historial
 
 @Composable
-fun EditHistorialScreen(navController: NavController, historial: historial) {
+fun EditHistorialScreen(navController: NavController, historialId: String) {
     val repository = FirebaseHistorialRepository()
+    var historial by remember { mutableStateOf<historial?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    LaunchedEffect(historialId) {
+        repository.getHistorial(
+            onSuccess = { historialList ->
+                historial = historialList.find { it.id == historialId }
+            },
+            onFailure = { error ->
+                errorMessage = "Error al obtener historial: ${error.message}"
+            }
+        )
+    }
+
+    if (historial != null) {
+        EditHistorialScreenContent(navController = navController, historial = historial!!, repository = repository)
+    } else {
+        errorMessage?.let { Text(text = it, color = MaterialTheme.colorScheme.error) }
+    }
+}
+
+@Composable
+fun EditHistorialScreenContent(navController: NavController, historial: historial, repository: FirebaseHistorialRepository) {
     // States for editable fields
     val nombre = remember { mutableStateOf(historial.nombre) }
     val apellido = remember { mutableStateOf(historial.apellido) }
