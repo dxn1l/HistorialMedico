@@ -31,13 +31,18 @@ class FirebaseHistorialRepository {
     }
 
     fun getHistorial(onSuccess: (List<historial>) -> Unit, onFailure: (Exception) -> Unit) {
-        historialCollection.get()
-            .addOnSuccessListener { result ->
-                val historial = result.toObjects(historial::class.java)
-                onSuccess(historial)
-            }
-            .addOnFailureListener { exception -> onFailure(exception) }
+        val userId = getUserId()
+        if (userId != null) {
+            historialCollection.whereEqualTo("userId", userId).get()
+                .addOnSuccessListener { result ->
+                    val historial = result.toObjects(historial::class.java)
+                    onSuccess(historial)
+                }
+                .addOnFailureListener { exception -> onFailure(exception) }
+        } else {
+            onFailure(Exception("User not authenticated"))
+        }
     }
-
-
 }
+
+
