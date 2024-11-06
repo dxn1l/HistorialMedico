@@ -1,48 +1,49 @@
+// FirebaseHistorialRepository.kt
 package com.example.historialmedico.DataBase
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class FirebaseHistorialRepository {
 
     private val db = FirebaseFirestore.getInstance()
-    private val historialCollection = db.collection("historial")
-    private val auth = FirebaseAuth.getInstance()
+    private val historialCollection = db.collection("historiales")
 
-    private fun getUserId(): String? {
-        return auth.currentUser?.uid
+    // Método para obtener historiales
+    fun getHistorial(onSuccess: (List<historial>) -> Unit, onFailure: (Exception) -> Unit) {
+        historialCollection.get()
+            .addOnSuccessListener { result ->
+                val historialList = result.mapNotNull { document ->
+                    document.toObject(historial::class.java).apply { id = document.id }
+                }
+                onSuccess(historialList)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
 
-
-    fun addHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
-        val userId = getUserId()
-        if (userId != null){
-            historial.userId = userId
-            historialCollection.add(historial)
-                .addOnSuccessListener { documentReference ->
-                    historial.id = documentReference.id
+    // Método para actualizar un historial
+    fun updateHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        historial.id?.let {
+            historialCollection.document(it)
+                .set(historial)  // Esto reemplaza los datos completos del documento
+                .addOnSuccessListener {
                     onSuccess()
                 }
-                    .addOnFailureListener { exception -> onFailure(exception) }
-             }
-        else {
-            onFailure(Exception("User not authenticated"))
+                .addOnFailureListener { exception ->
+                    onFailure(exception)
+                }
         }
     }
 
-    fun getHistorial(onSuccess: (List<historial>) -> Unit, onFailure: (Exception) -> Unit) {
-    val userId = getUserId()
-    if (userId != null) {
-        historialCollection.whereEqualTo("userId", userId).get()
-            .addOnSuccessListener { result ->
-                val historial = result.toObjects(historial::class.java)
-                onSuccess(historial)
+    // Método para agregar un historial (si es necesario)
+    fun addHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        historialCollection.add(historial)
+            .addOnSuccessListener {
+                onSuccess()
             }
-            .addOnFailureListener { exception -> onFailure(exception) }
-    } else {
-        onFailure(Exception("User not authenticated"))
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
-}
-
-
 }
