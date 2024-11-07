@@ -34,7 +34,6 @@ fun AppNavigation() {
             AddHistorialScreen(
                 historialRepository = firebaseHistorialRepository,
                 onHistorialAdded = { currentScreen = Screen.Menu },
-                onBacktoMenu = { currentScreen = Screen.Menu }
             )
         }
         Screen.ViewHistorial -> {
@@ -51,7 +50,7 @@ fun AppNavigation() {
             selectedHistorialId?.let { historialId ->
                 EditHistorialScreen(
                     historialId = historialId,
-                    onBackToView = { currentScreen = Screen.ViewHistorial }
+                    onBackToMenu = { currentScreen = Screen.Menu }
                 )
             }
         }

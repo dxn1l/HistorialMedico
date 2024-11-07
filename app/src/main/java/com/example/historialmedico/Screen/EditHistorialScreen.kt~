@@ -1,64 +1,78 @@
 package com.example.historialmedico.Screen
 
-
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.example.historialmedico.DataBase.FirebaseHistorialRepository
 import com.example.historialmedico.DataBase.historial
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.text.input.ImeAction
 
 @Composable
-fun AddHistorialScreen(
-    historialRepository: FirebaseHistorialRepository,
-    onHistorialAdded: () -> Unit,
-    onBacktoMenu: () -> Unit
-) {
-    var id by remember { mutableStateOf("") }
-    var nombre by remember { mutableStateOf("") }
-    var apellido by remember { mutableStateOf("") }
-    var DNI by remember { mutableStateOf("") }
-    var edad by remember { mutableStateOf("") }
-    var peso by remember { mutableStateOf("") }
-    var altura by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
-    var correo by remember { mutableStateOf("") }
-    var sangre by remember { mutableStateOf("") }
-    var fechaUltimoExamen by remember { mutableStateOf("") }
-    var enfermedades by remember { mutableStateOf("") }
-    var cirugias by remember { mutableStateOf("") }
-    var fechaCirugias by remember { mutableStateOf("") }
-    var medicamentos by remember { mutableStateOf("") }
-    var alergias by remember { mutableStateOf("") }
-    var enfermedadesCronicas by remember { mutableStateOf("") }
-    var antecedentesPersonales by remember { mutableStateOf("") }
+fun EditHistorialScreen(historialId: String, onBackToView: () -> Unit) {
+    val repository = FirebaseHistorialRepository()
+    var historial by remember { mutableStateOf<historial?>(null) }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    var showDialogEmptylane by remember { mutableStateOf(false) }
-    var idError by remember { mutableStateOf(false) }
-    var dniError by remember { mutableStateOf(false) }
+    LaunchedEffect(historialId) {
+        repository.getHistorial(
+            onSuccess = { historialList ->
+                historial = historialList.find { it.id == historialId }
+            },
+            onFailure = { error ->
+                errorMessage = "Error al obtener historial: ${error.message}"
+            }
+        )
+    }
+
+    if (historial != null) {
+        EditHistorialScreenContent(historial = historial!!, repository = repository, onBackToView = onBackToView)
+    } else {
+        errorMessage?.let { Text(text = it, color = MaterialTheme.colorScheme.error) }
+    }
+}
+
+@Composable
+fun EditHistorialScreenContent(historial: historial, repository: FirebaseHistorialRepository, onBackToView: () -> Unit) {
+    val nombre = remember { mutableStateOf(historial.nombre) }
+    val DNI = remember { mutableStateOf(historial.DNI) }
+    val apellido = remember { mutableStateOf(historial.apellido) }
+    val edad = remember { mutableStateOf(historial.edad.toString()) }
+    val peso = remember { mutableStateOf(historial.peso.toString()) }
+    val altura = remember { mutableStateOf(historial.altura.toString()) }
+    val telefono = remember { mutableStateOf(historial.telefono.toString()) }
+    val correo = remember { mutableStateOf(historial.correo) }
+    val sangre = remember { mutableStateOf(historial.sangre) }
+    val fechaUltimoExamen = remember { mutableStateOf(historial.fechaUltimoExamen) }
+    val enfermedades = remember { mutableStateOf(historial.enfermedades) }
+    val cirugias = remember { mutableStateOf(historial.cirugias) }
+    val fechaCirugias = remember { mutableStateOf(historial.fechaCirugias) }
+    val medicamentos = remember { mutableStateOf(historial.medicamentos) }
+    val alergias = remember { mutableStateOf(historial.alergias) }
+    val enfermedadesCronicas = remember { mutableStateOf(historial.enfermedadesCronicas) }
+    val antecedentesPersonales = remember { mutableStateOf(historial.antecedentesPersonales) }
+
     var nombreError by remember { mutableStateOf(false) }
+    var dniError by remember { mutableStateOf(false) }
     var apellidoError by remember { mutableStateOf(false) }
     var edadError by remember { mutableStateOf(false) }
     var pesoError by remember { mutableStateOf(false) }
@@ -78,7 +92,7 @@ fun AddHistorialScreen(
     var expanded by remember { mutableStateOf(false) }
 
     val isFormValid =
-        !idError && !dniError && !nombreError && !apellidoError && !edadError && !pesoError && !alturaError && !telefonoError && !correoError && !fechaUltimoExamenError && !enfermedadesError && !cirugiasError && !fechaCirugiasError && !medicamentosError && !alergiasError && !enfermedadesCronicasError && !antecedentesPersonalesError
+        !dniError && !nombreError && !apellidoError && !edadError && !pesoError && !alturaError && !telefonoError && !correoError && !fechaUltimoExamenError && !enfermedadesError && !cirugiasError && !fechaCirugiasError && !medicamentosError && !alergiasError && !enfermedadesCronicasError && !antecedentesPersonalesError
 
     LazyColumn(
         modifier = Modifier
@@ -100,28 +114,9 @@ fun AddHistorialScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     OutlinedTextField(
-                        value = id,
+                        value = nombre.value,
                         onValueChange = {
-                            id = it
-                            idError = it.isBlank()
-                        },
-                        label = { Text("ID") },
-                        isError = idError
-                    )
-                    if (idError) {
-                        Text(
-                            text = "ID inválido, escriba correctamente",
-                            color = MaterialTheme.colorScheme.error,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = nombre,
-                        onValueChange = {
-                            nombre = it
+                            nombre.value = it
                             nombreError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Nombre") },
@@ -138,9 +133,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = apellido,
+                        value = apellido.value,
                         onValueChange = {
-                            apellido = it
+                            apellido.value = it
                             apellidoError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Apellido") },
@@ -157,18 +152,17 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = DNI,
+                        value = DNI.value,
                         onValueChange = {
                             if (it.matches(Regex("^\\d{0,8}[A-Za-z]?$"))) {
-                                DNI = it
+                                DNI.value = it
                                 dniError = !it.matches(Regex("^\\d{8}[A-Za-z]$"))
                             } else {
                                 dniError = true
                             }
                         },
                         label = { Text("DNI") },
-                        isError = dniError,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+                        isError = dniError
                     )
                     if (dniError) {
                         Text(
@@ -181,16 +175,15 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = edad,
+                        value = edad.value,
                         onValueChange = {
                             if (it.length <= 3) {
-                                edad = it
+                                edad.value = it
                                 edadError = !it.matches(Regex("^[0-9]*$"))
                             }
                         },
                         label = { Text("Edad") },
-                        isError = edadError,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+                        isError = edadError
                     )
                     if (edadError) {
                         Text(
@@ -203,18 +196,17 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = peso,
+                        value = peso.value,
                         onValueChange = {
                             if (it.matches(Regex("^\\d{0,3}(\\.\\d{0,3})?$"))) {
-                                peso = it
+                                peso.value = it
                                 pesoError = false
                             } else {
                                 pesoError = true
                             }
                         },
                         label = { Text("Peso") },
-                        isError = pesoError,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+                        isError = pesoError
                     )
                     if (pesoError) {
                         Text(
@@ -227,18 +219,17 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = altura,
+                        value = altura.value,
                         onValueChange = {
                             if (it.matches(Regex("^\\d?(\\.\\d{0,3})?$"))) {
-                                altura = it
+                                altura.value = it
                                 alturaError = false
                             } else {
                                 alturaError = true
                             }
                         },
                         label = { Text("Altura") },
-                        isError = alturaError,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+                        isError = alturaError
                     )
                     if (alturaError) {
                         Text(
@@ -251,16 +242,15 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = telefono,
+                        value = telefono.value,
                         onValueChange = {
                             if (it.length <= 9) {
-                                telefono = it
+                                telefono.value = it
                                 telefonoError = !it.matches(Regex("^[0-9]*$"))
                             }
                         },
                         label = { Text("Teléfono") },
-                        isError = telefonoError,
-                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Next)
+                        isError = telefonoError
                     )
                     if (telefonoError) {
                         Text(
@@ -273,9 +263,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = correo,
+                        value = correo.value,
                         onValueChange = {
-                            correo = it
+                            correo.value = it
                             correoError =
                                 !it.matches(Regex("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+.[A-Za-z0-9.-]$"))
                         },
@@ -300,15 +290,15 @@ fun AddHistorialScreen(
                             DropdownMenuItem(
                                 text = { Text(bloodType) },
                                 onClick = {
-                                    sangre = bloodType
+                                    sangre.value = bloodType
                                     expanded = false
                                 }
                             )
                         }
                     }
                     OutlinedTextField(
-                        value = sangre,
-                        onValueChange = { sangre = it },
+                        value = sangre.value,
+                        onValueChange = { sangre.value = it },
                         readOnly = true,
                         label = { Text("Tipo de sangre") },
                         trailingIcon = {
@@ -321,9 +311,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = fechaUltimoExamen,
+                        value = fechaUltimoExamen.value,
                         onValueChange = {
-                            fechaUltimoExamen = it
+                            fechaUltimoExamen.value = it
                             fechaUltimoExamenError = !it.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))
                         },
                         label = { Text("Fecha del último examen") },
@@ -340,9 +330,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = enfermedades,
+                        value = enfermedades.value,
                         onValueChange = {
-                            enfermedades = it
+                            enfermedades.value = it
                             enfermedadesError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Enfermedades") },
@@ -359,9 +349,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = cirugias,
+                        value = cirugias.value,
                         onValueChange = {
-                            cirugias = it
+                            cirugias.value = it
                             cirugiasError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Cirugias") },
@@ -378,9 +368,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = fechaCirugias,
+                        value = fechaCirugias.value,
                         onValueChange = {
-                            fechaCirugias = it
+                            fechaCirugias.value = it
                             fechaCirugiasError = !it.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$"))
                         },
                         label = { Text("Fecha de las cirugias") },
@@ -397,9 +387,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = medicamentos,
+                        value = medicamentos.value,
                         onValueChange = {
-                            medicamentos = it
+                            medicamentos.value = it
                             medicamentosError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Medicamentos") },
@@ -416,9 +406,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = alergias,
+                        value = alergias.value,
                         onValueChange = {
-                            alergias = it
+                            alergias.value = it
                             alergiasError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Alergias") },
@@ -435,9 +425,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = enfermedadesCronicas,
+                        value = enfermedadesCronicas.value,
                         onValueChange = {
-                            enfermedadesCronicas = it
+                            enfermedadesCronicas.value = it
                             enfermedadesCronicasError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Enfermedades crónicas") },
@@ -454,9 +444,9 @@ fun AddHistorialScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = antecedentesPersonales,
+                        value = antecedentesPersonales.value,
                         onValueChange = {
-                            antecedentesPersonales = it
+                            antecedentesPersonales.value = it
                             antecedentesPersonalesError = !it.matches(Regex("^[a-zA-Z\\s]*$"))
                         },
                         label = { Text("Antecedentes personales") },
@@ -484,60 +474,44 @@ fun AddHistorialScreen(
 
                     Button(
                         onClick = {
-                            if (id.isBlank() || DNI.isBlank() || nombre.isBlank() || apellido.isBlank() || edad.isBlank() || peso.isBlank() || altura.isBlank() || telefono.isBlank() || correo.isBlank() || sangre.isBlank() || fechaUltimoExamen.isBlank() || enfermedades.isBlank() || cirugias.isBlank() || fechaCirugias.isBlank() || medicamentos.isBlank() || alergias.isBlank() || enfermedadesCronicas.isBlank() || antecedentesPersonales.isBlank()) {
-                                showDialogEmptylane = true
-                            } else {
-                                historialRepository.addHistorial(
-                                    historial(
-                                        id = id,
-                                        nombre = nombre,
-                                        apellido = apellido,
-                                        DNI = DNI,
-                                        edad = edad.toInt(),
-                                        peso = peso.toDouble(),
-                                        altura = altura.toDouble(),
-                                        telefono = telefono.toInt(),
-                                        correo = correo,
-                                        sangre = sangre,
-                                        fechaUltimoExamen = fechaUltimoExamen,
-                                        enfermedades = enfermedades,
-                                        cirugias = cirugias,
-                                        fechaCirugias = fechaCirugias,
-                                        medicamentos = medicamentos,
-                                        alergias = alergias,
-                                        enfermedadesCronicas = enfermedadesCronicas,
-                                        antecedentesPersonales = antecedentesPersonales
-                                    ),
-                                    onSuccess = { onHistorialAdded() },
-                                    onFailure = { showDialogEmptylane = true }
-                                )
-                            }
+                            val updatedHistorial = historial.copy(
+                                nombre = nombre.value,
+                                apellido = apellido.value,
+                                DNI = DNI.value,
+                                edad = edad.value.toIntOrNull() ?: 0,
+                                peso = peso.value.toDoubleOrNull() ?: 0.0,
+                                altura = altura.value.toDoubleOrNull() ?: 0.0,
+                                telefono = telefono.value.toIntOrNull() ?: 0,
+                                correo = correo.value,
+                                sangre = sangre.value,
+                                fechaUltimoExamen = fechaUltimoExamen.value,
+                                enfermedades = enfermedades.value,
+                                cirugias = cirugias.value,
+                                fechaCirugias = fechaCirugias.value,
+                                medicamentos = medicamentos.value,
+                                alergias = alergias.value,
+                                enfermedadesCronicas = enfermedadesCronicas.value,
+                                antecedentesPersonales = antecedentesPersonales.value
+                            )
+                            repository.updateHistorial(updatedHistorial, onSuccess = {
+                                onBackToMenu()
+                            }, onFailure = {
+                                // Handle failure
+                            })
                         },
                         enabled = isFormValid
                     ) {
-                        Text(text = "Guardar Historial")
+                        Text("Guardar cambios")
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Button(
-                        onClick = { onBacktoMenu() },
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        Text(text = "Volver al menú")
-
-                        if (showDialogEmptylane) {
-                            AlertDialog(
-                                onDismissRequest = { showDialogEmptylane = false },
-                                title = { Text("Error") },
-                                text = { Text("Por favor completa todos los campos correctamente") },
-                                confirmButton = {
-                                    TextButton(onClick = { showDialogEmptylane = false }) {
-                                        Text("OK")
-                                    }
-                                }
-                            )
+                        onClick = {
+                            onBackToView()
                         }
+                    ) {
+                        Text("Cancelar")
                     }
                 }
             }

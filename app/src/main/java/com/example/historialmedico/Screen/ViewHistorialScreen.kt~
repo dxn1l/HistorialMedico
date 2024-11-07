@@ -56,7 +56,6 @@ fun ViewHistorialScreen(
                     ) {
                         Text(text = "Nombre: ${historial.nombre}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Apellido: ${historial.apellido}", style = MaterialTheme.typography.bodyLarge)
-                        Text(text = "DNI: ${historial.DNI}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Edad: ${historial.edad} años", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Peso: ${historial.peso} kg", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Altura: ${historial.altura} m", style = MaterialTheme.typography.bodyLarge)
@@ -68,6 +67,8 @@ fun ViewHistorialScreen(
                         Text(text = "Cirugías: ${historial.cirugias}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Fecha de las cirugías: ${historial.fechaCirugias}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Medicamentos: ${historial.medicamentos}", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "Dosis: ${historial.dosis}", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = "Uso de medicamentos: ${historial.usoMedicamentos}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Alergias: ${historial.alergias}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Enfermedades crónicas: ${historial.enfermedadesCronicas}", style = MaterialTheme.typography.bodyLarge)
                         Text(text = "Antecedentes personales: ${historial.antecedentesPersonales}", style = MaterialTheme.typography.bodyLarge)
