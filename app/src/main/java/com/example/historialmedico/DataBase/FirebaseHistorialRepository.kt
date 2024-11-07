@@ -15,27 +15,23 @@ class FirebaseHistorialRepository {
     }
 
     fun addHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
+        historialCollection.add(historial)
+            .addOnSuccessListener { documentReference ->
+                historial.id = documentReference.id
+                onSuccess()
+            }
+            .addOnFailureListener { exception -> onFailure(exception) }
         val userId = getUserId()
-        if (userId != null) {
+        if (userId != null){
             historial.userId = userId
-            // First, delete any existing historial for the user
-            historialCollection
-                .whereEqualTo("userId", userId)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result.documents) {
-                        historialCollection.document(document.id).delete()
-                    }
-                    // After deleting, add the new historial
-                    historialCollection.add(historial)
-                        .addOnSuccessListener { documentReference ->
-                            historial.id = documentReference.id
-                            onSuccess()
-                        }
-                        .addOnFailureListener { exception -> onFailure(exception) }
+            historialCollection.add(historial)
+                .addOnSuccessListener { documentReference ->
+                    historial.id = documentReference.id
+                    onSuccess()
                 }
                 .addOnFailureListener { exception -> onFailure(exception) }
-        } else {
+        }
+        else {
             onFailure(Exception("User not authenticated"))
         }
     }
@@ -44,7 +40,7 @@ class FirebaseHistorialRepository {
         val userId = getUserId()
         if (userId != null) {
             historialCollection
-                .whereEqualTo("userId", userId)  // Filtrar solo por el usuario actual
+                .whereEqualTo("userId", userId)
                 .get()
                 .addOnSuccessListener { result ->
                     val historialList = result.documents.mapNotNull { document ->
@@ -63,53 +59,26 @@ class FirebaseHistorialRepository {
         }
     }
 
-
-    fun deleteHistorial(
-        historialId: String,
-        onSuccess: () -> Unit,
-        onFailure: (Exception) -> Unit
-    ) {
+    fun updateHistorial(historial: historial, onSuccess: () -> Unit, onFailure: (Exception) -> Unit) {
         val userId = getUserId()
         if (userId != null) {
+            historial.userId = userId
             historialCollection
                 .whereEqualTo("userId", userId)
-                .whereEqualTo("id", historialId)  // Buscar por el ID del historial
                 .get()
                 .addOnSuccessListener { result ->
-                    if (!result.isEmpty) {
-                        // Eliminar el documento
-                        val documentId = result.documents.first().id
-                        historialCollection.document(documentId).delete()
-                            .addOnSuccessListener {
-                                Log.d(
-                                    "FirebaseHistorialRepository",
-                                    "Historial eliminado exitosamente"
-                                )
-                                onSuccess()
-                            }
-                            .addOnFailureListener { exception ->
-                                Log.e(
-                                    "FirebaseHistorialRepository",
-                                    "Error al eliminar historial",
-                                    exception
-                                )
-                                onFailure(exception)
-                            }
-                    } else {
-                        onFailure(Exception("Historial no encontrado para eliminar"))
+                    for (document in result.documents) {
+                        historialCollection.document(document.id).set(historial)
+                            .addOnSuccessListener { onSuccess() }
+                            .addOnFailureListener { exception -> onFailure(exception) }
                     }
                 }
-                .addOnFailureListener { exception ->
-                    Log.e(
-                        "FirebaseHistorialRepository",
-                        "Error al buscar historial para eliminar",
-                        exception
-                    )
-                    onFailure(exception)
-                }
+                .addOnFailureListener { exception -> onFailure(exception) }
         } else {
             onFailure(Exception("User not authenticated"))
         }
     }
+
+
 }
 
